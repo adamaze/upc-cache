@@ -1,9 +1,9 @@
 name: Build and Publish to GHCR
 
-# Trigger the action every time you push to the "main" branch
 on:
   push:
     branches: [ "main" ]
+    tags: [ "v*" ]
 
 env:
   REGISTRY: ghcr.io
@@ -33,7 +33,9 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: type=raw,value=latest
+          tags: |
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+            type=ref,event=tag
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
